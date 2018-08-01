@@ -69,28 +69,42 @@ class NeuralNetwork():
             data = self.__sigmoid(dot(data, self.synaptic_weights[iteration]))
         return data
 
+    def handler(self, x_std, labels, epochs, learning_rate):
 
-if __name__ == "__main__":
-    # print "Hey  "
-    # Intialise a single neuron neural network.
-    neural_network = NeuralNetwork()
+        from sklearn.model_selection import train_test_split
+        from sklearn.metrics import accuracy_score
 
-    print "Random starting synaptic weights: "
-    print neural_network.synaptic_weights
+        x_train, x_test, y_train, y_test = train_test_split(
+            x_std, labels, test_size=0.2, random_state=0)
+        self.train(x_train,
+                   y_train, epochs, learning_rate)
+        pred = self.think(x_test)
+        pred_round = [round(elem) for elem in pred]
+        acc_score = accuracy_score(y_test, pred_round)
+        print('Accuracy for NN is: ', acc_score)
 
-    # The training set. We have 4 examples, each consisting of 3 input values
-    # and 1 output value.
-    training_set_inputs = array([[0, 0, 1], [1, 1, 1], [1, 0, 1], [0, 1, 1]])
-    training_set_outputs = array([[0, 1, 1, 0]]).T
 
-    # Train the neural network using a training set.
-    # Do it 10,000 times and make small adjustments each time.
-    neural_network.train(training_set_inputs,
-                         training_set_outputs, 200000, 0.01)
+# if __name__ == "__main__":
+#     # print "Hey  "
+#     # Intialise a single neuron neural network.
+#     neural_network = NeuralNetwork()
 
-    print "New synaptic weights after training: "
-    print neural_network.synaptic_weights
+#     print "Random starting synaptic weights: "
+#     print neural_network.synaptic_weights
 
-    # Test the neural network with a new situation.
-    print "Considering new situation [1, 0, 0] -> ?: "
-    print neural_network.think(array([1, 0, 0]))
+#     # The training set. We have 4 examples, each consisting of 3 input values
+#     # and 1 output value.
+#     training_set_inputs = array([[0, 0, 1], [1, 1, 1], [1, 0, 1], [0, 1, 1]])
+#     training_set_outputs = array([[0, 1, 1, 0]]).T
+
+#     # Train the neural network using a training set.
+#     # Do it 10,000 times and make small adjustments each time.
+#     neural_network.train(training_set_inputs,
+#                          training_set_outputs, 200000, 0.01)
+
+#     print "New synaptic weights after training: "
+#     print neural_network.synaptic_weights
+
+#     # Test the neural network with a new situation.
+#     print "Considering new situation [1, 0, 0] -> ?: "
+#     print neural_network.think(array([1, 0, 0]))

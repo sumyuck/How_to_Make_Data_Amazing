@@ -11,8 +11,6 @@ from sklearn.metrics import accuracy_score
 
 
 def svm_eval(x_std, labels):
-    print x_std.shape
-    print labels.shape
     x_train, x_test, y_train, y_test = train_test_split(
         x_std, labels, test_size=0.2, random_state=0)
     clf = svm.SVC()
@@ -22,13 +20,16 @@ def svm_eval(x_std, labels):
     print('Accuracy for SVM is: ', acc_score)
 
 if __name__ == "__main__":
+
+    # Load the database
     df = pd.read_csv("Speed Dating Data.csv")
+    # Seperate labels and features
     labels = df.loc[:, "match"].values.T
     # labels = reshape(labels, (-1, 8378)).T
     df = df.drop(columns='match')
     print "Number of features {}".format(df.shape[1])
     column_with_nan = df.isnull().sum()
-    # drop columns with NaN values greater than 3000
+    # drop columns with no. of NaN values greater than 3000
     df = df.loc[:, column_with_nan <= 3000]
     # fill missing values with mean column values
     df = df.fillna(df.mean())
@@ -39,19 +40,25 @@ if __name__ == "__main__":
     df = df.apply(LabelEncoder().fit_transform)
     print "Number of features left {}".format(df.shape[1])
     x = df.values
+    # Normalize the features
     standard_scaler = StandardScaler()
     x_std = standard_scaler.fit_transform(x)
     pca = PCA(n_components=None)
     pca.fit(x_std)
     # uncomment lines below to see variance retained vs the number of
     # components
-    plt.plot(range(0, 119), pca.explained_variance_ratio_)
-    plt.show()
-    pca = PCA(n_components=85)
+    # number_components = 0
+    for x in range(x_std.shape[1]):
+        pca = PCA(n_components=x)
+        pca.fit_transform(x_std)
+        # Achieve around 94% of variance retention
+        if sum(pca.explained_variance_ratio_) > 0.94:
+            break
     x_std = pca.fit_transform(x_std)
-    # around 94 percent variance is retained
-    print "Variance retained {}".format(sum(pca.explained_variance_ratio_))
-    # neural_network = NeuralNetwork()
-    # neural_network.train(x_std,
-    #                      labels.T, 100, 0.01)
+    # Uncomment to see how variance varies with no. of components
+    # plt.plot(range(0, 119), pca.explained_variance_ratio_)
+    # plt.show()
     svm_eval(x_std, labels)
+    neural_network = NeuralNetwork()
+    neural_network.handler(x_std,
+                           reshape(labels, (-1, 8378)).T, 100, 0.01)
