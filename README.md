@@ -9,4 +9,4 @@ Classification is done using an SVM classifier and a neural network with mini ba
 * pandas
 * numpy
 ## Use
-run ``python demo.py``
+run ``python main.py``
